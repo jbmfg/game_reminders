@@ -11,22 +11,25 @@ def push_game(home, h_a, away, a_a, md, days_to_go):
     else:
         dow = datetime.strftime(md, "%A")
         gt = datetime.strftime(md, "%I:%M %p")
-        message = f"Game on {dow} @ {gt}"
+        message = f"{dow} @ {gt}"
     pd = {
             "token": token,
             "user": user_key,
             "title": f"{a_a}@{h_a}",
             "message": message,
-            "sound": "intermission"
+            "sound": "intermission",
+            "ttl": 86400
             }
     push_url = 'https://api.pushover.net/1/messages.json'
     pushover = requests.post(push_url, json=pd)
 
 def get_game_data():
-    all_games_url = "https://sportapi.sportingkc.com/api/matches?culture=en-us&dateFrom=2023-12-31&dateTo=2024-12-31&clubOptaId=421"
+    all_games_url = "https://sportapi.sportingkc.com/api/matches?culture=en-us&dateFrom=2024-12-31&dateTo=2025-12-31&clubOptaId=421"
+    all_games_url = "https://sportapi.sportingkc.com/api/matches/bySportecIds/MLS-MAT-0009BD,MLS-MAT-0009BN,MLS-MAT-0009C3,MLS-MAT-0009CI,MLS-MAT-0009CW,MLS-MAT-0009DH,MLS-MAT-0009DR,MLS-MAT-0009E0,MLS-MAT-0009ER,MLS-MAT-0009F9,MLS-MAT-0009FS,MLS-MAT-0009G3,MLS-MAT-0009GD,MLS-MAT-0009GX,MLS-MAT-0009HA,MLS-MAT-0009HJ,MLS-MAT-0009HV,MLS-MAT-0009IC,MLS-MAT-0009IP,MLS-MAT-0009J5,MLS-MAT-0009JT,MLS-MAT-0009K0,MLS-MAT-0009KF,MLS-MAT-0009L1,MLS-MAT-0009L9,MLS-MAT-0009LO,MLS-MAT-0009M3,MLS-MAT-0009MI,MLS-MAT-0009N2,MLS-MAT-0009NA,MLS-MAT-0009NS,MLS-MAT-0009O6,MLS-MAT-0009OJ,MLS-MAT-0009P7"
     r = requests.get(all_games_url)
     if r.status_code == 200:
         data = r.json()
+        data = sorted(data, key=lambda x: x["matchDate"])
 
         now = datetime.utcnow()
         fmt = "%Y-%m-%dT%H:%M:%S.0000000Z"
@@ -40,7 +43,7 @@ def get_game_data():
             if md > now:
                 break
     days_to_go = (md - now).days
-    md = md - timedelta(hours=5)
+    md = md - timedelta(hours=4)
     return home, h_a, away, a_a, md, days_to_go
 
 if __name__ == "__main__":

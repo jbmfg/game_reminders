@@ -4,11 +4,11 @@ import json
 
 today = datetime.datetime.now()
 
-with open("/home/jbg/dev/sports_reminders/pushover_settings.conf", "r") as f:
+with open("/home/jbg/game_reminders/pushover_settings.conf", "r") as f:
     settings = json.load(f)
 token, user_key = settings["chiefs"], settings["user_key"]
 
-with open("/home/jbg/dev/sports_reminders/2022_chiefs_schedule.ics", "r") as f:
+with open("/home/jbg/game_reminders/2026_kcchiefs_schedule.ics", "r") as f:
     data = f.read()
     game_data = data.split("BEGIN:VEVENT")
     for game in game_data[1:]:
@@ -24,6 +24,8 @@ with open("/home/jbg/dev/sports_reminders/2022_chiefs_schedule.ics", "r") as f:
                 game_datetime = datetime.datetime.strptime(date_part, format)
                 if len(date_part) !=8:
                     game_datetime -= datetime.timedelta(hours=4)
+        friendly = datetime.datetime.strftime(game_datetime, "%-I:%M%p %A %b %d").replace("PM", "pm", 1)
+
         if game_datetime >= today:
             relative_gd =\
             "Today!" if game_datetime.date() == today.date() else f"In {(game_datetime.date()-today.date()).days} days"
@@ -44,8 +46,8 @@ with open("/home/jbg/dev/sports_reminders/2022_chiefs_schedule.ics", "r") as f:
             "token": token,
             "user": user_key,
             "title": f"KC Chiefs vs {opponent} {relative_gd}",
-            "message": f"{tv} @ {game_datetime}",
-            "sound": "intermission"
+            "message": f"{friendly}, on {tv}",
+            "sound": "KC_Chiefs_Chop"
             }
     push_url = 'https://api.pushover.net/1/messages.json'
     pushover = requests.post(push_url, json=pd)

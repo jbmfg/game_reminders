@@ -18,6 +18,8 @@ with open("/home/jbg/dev/sports_reminders/2023_sportingkc_schedule.ics", "r") as
         game_details = game.split("\n")
         game_datetime = datetime.datetime.strptime(game_details[1].split(":")[1], "%Y%m%dT%H%M%SZ") - datetime.timedelta(hours=4)
         est = pytz.timezone("US/Eastern")
+        print(est.localize(game_datetime.astimezone).astimezone(pytz.utc))
+        input()
         game_datetime_est = game_datetime.astimezone(est)
         weekday = day_abbr[game_datetime_est.weekday()]
         game_datetime_est = datetime.datetime.strftime(game_datetime_est, "%h %d @ %I:%M %p")

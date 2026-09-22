@@ -4,7 +4,7 @@ import requests
 import json
 import re
 
-with open("/home/jbg/dev/sports_reminders/pushover_settings.conf", "r") as f:
+with open("/home/jbg/game_reminders/pushover_settings.conf", "r") as f:
     settings = json.load(f)
 token, user_key, youtube = settings["royals"], settings["user_key"], settings["youtube"]
 
@@ -24,7 +24,7 @@ for game in games:
 
 today = datetime.datetime.now().date()
 
-with open("/home/jbg/dev/sports_reminders/2022_kcroyals_schedule.csv", "r") as csv_file:
+with open("/home/jbg/game_reminders/2026_kcroyals_schedule.csv", "r") as csv_file:
     data = csv.DictReader(csv_file)
 
     for x, game in enumerate(data):
@@ -34,6 +34,7 @@ with open("/home/jbg/dev/sports_reminders/2022_kcroyals_schedule.csv", "r") as c
             start_time = game["START TIME ET"]
             opponent = game["SUBJECT"].replace("at", "").replace("Royals", "").strip()
             home_away = "Home" if game["LOCATION"] == "Kauffman Stadium - Kansas City" else "Away"
+            print(game)
             break
 
     pd = {
@@ -42,8 +43,8 @@ with open("/home/jbg/dev/sports_reminders/2022_kcroyals_schedule.csv", "r") as c
             "title": f"vs {opponent} ({relative_gd})",
             "message": f"{home_away} @ {start_time}",
             "sound": "intermission",
-            "url": highlights[0][1],
-            "url_title": f"Highlights from {highlights[0][0]}"
+            #"url": highlights[0][1],
+            #"url_title": f"Highlights from {highlights[0][0]}"
             }
     push_url = 'https://api.pushover.net/1/messages.json'
     pushover = requests.post(push_url, json=pd)
